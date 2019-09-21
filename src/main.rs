@@ -10,17 +10,22 @@ fn main() {
     hyper::rt::run(server);
 }
 
+fn response_with_code(code: StatusCode) -> Response<Body> {
+    Response::builder()
+        .status(code)
+        .body(Body::empty())
+        .unwrap()
+}
+
 fn handler(req: Request<Body>) -> impl Future<Item=Response<Body>, Error=Error> {
-    match(req.method(), req.uri().path()) {
-        (&Method::GET, "/") => {
-            future::ok(Response::new("Hello from Rust!".into()))
-        },
-        _ => {
-            let response = Response::builder()
-                .status(StatusCode::NOT_FOUND)
-                .body(Body::empty())
-                .unwrap();
-            future::ok(response)
-        }
-    }
+    let response = 
+        match(req.method(), req.uri().path()) {
+            (&Method::GET, "/") => {
+                Response::new("Hello from Rust!".into())
+            },
+            _ => {
+                response_with_code(StatusCode::NOT_FOUND)
+            }
+        };
+    future::ok(response)
 }
