@@ -204,6 +204,7 @@ dependencies = [
 name = "hyper-tiny-server"
 version = "0.1.0"
 dependencies = [
+ "futures 0.1.29 (registry+https://github.com/rust-lang/crates.io-index)",
  "hyper 0.12.34 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
