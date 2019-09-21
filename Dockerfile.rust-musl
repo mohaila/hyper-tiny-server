@@ -1,0 +1,12 @@
+FROM alpine:3.10
+RUN apk update --no-cache && \
+    apk add --no-cache rust cargo git build-base  && \
+    mkdir /build && \
+    mkdir /.cargo && \
+    chown -R 1000:1000 /.cargo &&\
+    chown -R 1000:1000 /build
+USER 1000:1000
+VOLUME /build
+WORKDIR /build
+ENV RUSTFLAGS="-C target-feature=+crt-static"
+CMD  ["sh", "build-project.sh"]
