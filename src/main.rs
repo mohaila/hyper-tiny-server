@@ -2,6 +2,9 @@ use futures::{future, Future};
 use hyper::service::service_fn;
 use hyper::{Body, Error, Method, Request, Response, Server, StatusCode};
 
+mod notes;
+use notes::*;
+
 fn main() {
     let addr = ([0, 0, 0, 0], 8080).into();
     let builder = Server::bind(&addr);
@@ -28,15 +31,15 @@ fn handler(req: Request<Body>) -> impl Future<Item = Response<Body>, Error = Err
                 .map(|i| i as u64);
             match (method, id) {
                 // GET /notes/1234
-                (&Method::GET, Some(_)) => Response::new("Get note by id".into()),
-                // GET /notes
-                (&Method::GET, None) => Response::new("Get all notes".into()),
-                // POST /notes
-                (&Method::POST, None) => Response::new("Create note".into()),
+                (&Method::GET, Some(_)) => get_note(&req),
+                // GET /notes/
+                (&Method::GET, None) => get_all_notes(&req),
+                // POST /notes/
+                (&Method::POST, None) => create_note(&req),
                 // PUT /notes/1234
-                (&Method::PUT, Some(_)) => Response::new("Update note by id".into()),
+                (&Method::PUT, Some(_)) => update_note(&req),
                 // DELETE /notes/1234
-                (&Method::DELETE, Some(_)) => Response::new("delete note by id".into()),
+                (&Method::DELETE, Some(_)) => delete_note(&req),
                 // Other verbs
                 _ => response_with_code(StatusCode::METHOD_NOT_ALLOWED),
             }
@@ -45,5 +48,3 @@ fn handler(req: Request<Body>) -> impl Future<Item = Response<Body>, Error = Err
     };
     future::ok(response)
 }
-
-const NOTES: &str = "/notes/";
